@@ -1,0 +1,21 @@
+# Maven
+target/
+*.class
+*.jar
+
+# Eclipse/IDE
+*.iml
+*.classpath
+*.project
+.settings/
+.vscode/
+
+# Logs, reports, screenshots (generated files)
+logs/
+reports/
+test-output/
+target/
+
+# Temporary files
+*.log
+.DS_Store
