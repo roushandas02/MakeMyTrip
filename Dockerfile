@@ -11,7 +11,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY pom.xml .
+COPY pom.xml testng.xml .
+
 RUN mvn dependency:go-offline -B
 
 COPY src ./src
