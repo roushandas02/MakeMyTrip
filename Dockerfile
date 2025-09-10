@@ -11,11 +11,13 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY pom.xml testng.xml config/config.properties .
+COPY pom.xml testng.xml .
 
 RUN mvn dependency:go-offline -B
 
 COPY src ./src
+COPY config ./config
+
 RUN mvn clean install -DskipTests
 
 CMD ["mvn", "test"]
