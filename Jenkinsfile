@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:24.0'
-            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "selenium-testng-makemytrip"
@@ -18,38 +13,47 @@ pipeline {
             }
         }
 
+        stage('Check Docker Installation') {
+            steps {
+                bat '''
+                docker --version >nul 2>&1
+                if %errorlevel% neq 0 (
+                    echo Docker is not installed or not running
+                    exit /b 1
+                ) else (
+                    echo Docker is installed
+                    docker --version
+                )
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                script {
-                    echo "Building Docker image: ${IMAGE_NAME}"
-                    sh "docker build -t ${IMAGE_NAME}:latest ."
-                }
+                bat '''
+                echo Building Docker image: %IMAGE_NAME%
+                docker build -t %IMAGE_NAME%:latest .
+                '''
             }
         }
 
         stage('Run Selenium Tests') {
             steps {
-                script {
-                    echo "Running Selenium + TestNG tests in Docker container..."
-                    sh """
-                        docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest || true
-                        docker cp ${CONTAINER_NAME}:/app/target/surefire-reports ./surefire-reports || true
-                        docker cp ${CONTAINER_NAME}:/app/test-output ./test-output || true
-                        docker rm ${CONTAINER_NAME} || true
-                    """
-                }
+                bat '''
+                echo Running Selenium + TestNG tests in Docker container...
+                docker run --name %CONTAINER_NAME% %IMAGE_NAME%:latest || exit /b 0
+                docker cp %CONTAINER_NAME%:/app/target/surefire-reports .\\surefire-reports || exit /b 0
+                docker cp %CONTAINER_NAME%:/app/test-output .\\test-output || exit /b 0
+                docker rm %CONTAINER_NAME% || exit /b 0
+                '''
             }
         }
 
         stage('Publish Reports') {
             steps {
-                // Corrected path for JUnit
                 junit 'surefire-reports/*.xml'
-
-                // Archive Extent Report HTML
                 archiveArtifacts artifacts: 'test-output/ExtentReport.html', allowEmptyArchive: true
 
-                // Publish Extent Report in Jenkins UI (requires HTML Publisher Plugin)
                 publishHTML(target: [
                     reportDir: 'test-output',
                     reportFiles: 'ExtentReport.html',
@@ -61,7 +65,6 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning workspace...'
             cleanWs()
         }
     }
