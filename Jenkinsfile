@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:24.0'
+            args '--privileged -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         IMAGE_NAME = "selenium-testng-makemytrip"
@@ -26,10 +31,10 @@ pipeline {
             steps {
                 script {
                     echo "Running Selenium + TestNG tests in Docker container..."
-                    // Run container (tests will auto-execute because of CMD mvn test in Dockerfile)
                     sh """
                         docker run --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest || true
                         docker cp ${CONTAINER_NAME}:/app/target/surefire-reports ./surefire-reports || true
+                        docker cp ${CONTAINER_NAME}:/app/test-output ./test-output || true
                         docker rm ${CONTAINER_NAME} || true
                     """
                 }
@@ -37,19 +42,21 @@ pipeline {
         }
 
         stage('Publish Reports') {
-    			steps {
-        			junit 'target/surefire-reports/*.xml'   // TestNG results
-        			archiveArtifacts artifacts: 'test-output/ExtentReport.html', allowEmptyArchive: true
+            steps {
+                // Corrected path for JUnit
+                junit 'surefire-reports/*.xml'
 
-		        // If HTML Publisher Plugin is installed
-		        publishHTML(target: [
-		            reportDir: 'test-output',
-		            reportFiles: 'ExtentReport.html',
-		            reportName: 'Extent Report'
-		        ])
-		    }
-		}
+                // Archive Extent Report HTML
+                archiveArtifacts artifacts: 'test-output/ExtentReport.html', allowEmptyArchive: true
 
+                // Publish Extent Report in Jenkins UI (requires HTML Publisher Plugin)
+                publishHTML(target: [
+                    reportDir: 'test-output',
+                    reportFiles: 'ExtentReport.html',
+                    reportName: 'Extent Report'
+                ])
+            }
+        }
     }
 
     post {
