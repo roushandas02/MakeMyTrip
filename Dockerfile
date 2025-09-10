@@ -1,8 +1,11 @@
 FROM maven:3.9.9-eclipse-temurin-11
 
-# Install Firefox only
+# Install dependencies + add Mozilla PPA
 RUN apt-get update && \
-    apt-get install -y wget gnupg curl unzip firefox-esr && \
+    apt-get install -y wget gnupg curl unzip software-properties-common && \
+    add-apt-repository ppa:mozillateam/ppa -y && \
+    apt-get update && \
+    apt-get install -y firefox && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
