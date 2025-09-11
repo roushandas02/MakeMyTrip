@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'selenium/standalone-firefox:4.22.0'
-            args '-u root -v /c/Users/roush/.jenkins/workspace/MMT:/workspace -w /workspace'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "selenium-testng-makemytrip"
