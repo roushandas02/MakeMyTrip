@@ -1,12 +1,15 @@
 FROM maven:3.9.9-eclipse-temurin-11
 
 # Install dependencies + add Mozilla PPA
-RUN apt-get update && \
-    apt-get install -y wget gnupg curl unzip software-properties-common && \
-    add-apt-repository ppa:mozillateam/ppa -y && \
-    apt-get update && \
-    apt-get install -y firefox && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    wget \
+    bzip2 \
+    dbus \
+    libxtst6 \
+    libdbus-glib-1-2 \
+    libnss3 \
+    xvfb \
+    firefox-esr
 
 WORKDIR /app
 
@@ -19,4 +22,4 @@ COPY config ./config
 
 RUN mvn clean install -DskipTests
 
-CMD ["mvn", "test"]
+CMD ["xvfb-run", "mvn", "test"]
