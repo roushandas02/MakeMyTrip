@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
     libdbus-glib-1-2 \
     libnss3 \
     xvfb \
-    firefox-esr
+    firefox
+
 
 WORKDIR /app
 
