@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'selenium/standalone-firefox:4.22.0'
+            args '-u root'  // to allow installs if needed
+        }
+    }
 
     environment {
         IMAGE_NAME = "selenium-testng-makemytrip"
