@@ -39,16 +39,27 @@ pipeline {
         
 
         stage('Run Selenium Tests') {
-            steps {
-                bat '''
-                echo Running Selenium + TestNG tests in Docker container...
-                docker run --name %CONTAINER_NAME% %IMAGE_NAME%:latest || exit /b 0
-                docker cp %CONTAINER_NAME%:/app/target/surefire-reports .\\surefire-reports || exit /b 0
-                docker cp %CONTAINER_NAME%:/app/test-output .\\test-output || exit /b 0
-                docker rm %CONTAINER_NAME% || exit /b 0
-                '''
-            }
-        }
+		    steps {
+		        bat '''
+		        echo Removing old container if exists...
+		        docker rm -f %CONTAINER_NAME% || exit /b 0
+		
+		        echo Running Selenium + TestNG tests in Docker container (detached)...
+		        docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%:latest
+		
+		        echo Streaming logs from container...
+		        docker logs -f %CONTAINER_NAME%
+		
+		        echo Copying test reports from container...
+		        docker cp %CONTAINER_NAME%:/app/target/surefire-reports .\\surefire-reports || exit /b 0
+		        docker cp %CONTAINER_NAME%:/app/test-output .\\test-output || exit /b 0
+		
+		        echo Removing container...
+		        docker rm %CONTAINER_NAME% || exit /b 0
+		        '''
+		    }
+		}
+
 
         stage('Publish Reports') {
             steps {
