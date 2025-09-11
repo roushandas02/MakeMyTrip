@@ -25,12 +25,12 @@ public class DriverSetup {
         switch (browser.toLowerCase()) {
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
-                FirefoxOptions options = new FirefoxOptions();
-                options.addArguments("--headless");  // Run without GUI
-                options.addArguments("--no-sandbox");
-                options.addArguments("--disable-dev-shm-usage");
-                driver = new FirefoxDriver(options);
-//                driver = new FirefoxDriver();
+//                FirefoxOptions options = new FirefoxOptions();
+//                options.addArguments("--headless");  // Run without GUI
+//                options.addArguments("--no-sandbox");
+//                options.addArguments("--disable-dev-shm-usage");
+//                driver = new FirefoxDriver(options);
+                driver = new FirefoxDriver();
                 break;
             case "chrome":
                 WebDriverManager.chromedriver().setup();

@@ -104,7 +104,7 @@ public class Hotel {
 	@FindBy(xpath="//label[@for='Swimming Pool']")
 	WebElement swimmingPoolFilterCheckbox;
 	
-	@FindBy(xpath="//label[contains(text(),'₹ 8000 - ₹ 12000')]")
+	@FindBy(xpath="//label[contains(text(),'₹ 4000 - ₹ 8000')]")
 	WebElement priceFilterCheckbox;
 	
 	@FindBy(xpath="//span[normalize-space()='(Lowest First)']")

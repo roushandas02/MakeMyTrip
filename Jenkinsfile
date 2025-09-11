@@ -37,22 +37,6 @@ pipeline {
             }
         }
         
-        stage('Setup Firefox') {
-            steps {
-                powershell '''
-                    # Install Chocolatey locally if not already
-                    if (-not (Test-Path "$env:LOCALAPPDATA\\chocoportable\\choco.exe")) {
-                        $chocoDir = "$env:LOCALAPPDATA\\chocoportable"
-                        New-Item -ItemType Directory -Force -Path $chocoDir | Out-Null
-                        Invoke-WebRequest https://community.chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression
-                    }
-                '''
-                bat '''
-                    set PATH=%LOCALAPPDATA%\\chocoportable;%PATH%
-                    choco install firefox -y --no-progress --install-arguments="/DIR=%LOCALAPPDATA%\\Firefox"
-                '''
-            }
-        }
 
         stage('Run Selenium Tests') {
             steps {
