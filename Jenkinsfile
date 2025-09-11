@@ -36,6 +36,15 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Setup Firefox') {
+            steps {
+                sh '''
+                    apt-get update
+                    apt-get install -y firefox-esr
+                '''
+            }
+        }
 
         stage('Run Selenium Tests') {
             steps {
