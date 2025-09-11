@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'JDK11'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/roushandas02/MakeMyTrip.git'
+            }
+        }
+        stage('Build & Test') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
+    }
+
+    post {
+        always {
+            publishHTML(target: [
+                reportDir: 'test-output',
+                reportFiles: 'ExtentReport.html',
+                reportName: 'Extent Report'
+            ])
+        }
+    }
+}
