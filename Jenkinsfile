@@ -39,9 +39,18 @@ pipeline {
         
         stage('Setup Firefox') {
             steps {
-                sh '''
-                    apt-get update
-                    apt-get install -y firefox-esr
+                bat '''
+                    :: Install Chocolatey if not already installed
+                    if not exist "C:\\ProgramData\\chocolatey\\bin\\choco.exe" (
+                        powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+                        "Set-ExecutionPolicy Bypass -Scope Process -Force; ^
+                        [System.Net.ServicePointManager]::SecurityProtocol = ^
+                        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ^
+                        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+                    )
+
+                    :: Install Firefox silently
+                    choco install firefox -y --no-progress
                 '''
             }
         }
