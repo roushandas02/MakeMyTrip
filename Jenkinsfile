@@ -39,19 +39,16 @@ pipeline {
         
         stage('Setup Firefox') {
             steps {
-                bat '''
-                    :: Install Chocolatey if not already installed
-                    if not exist "C:\\ProgramData\\chocolatey\\bin\\choco.exe" (
-                        powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-                        "Set-ExecutionPolicy Bypass -Scope Process -Force; ^
-                        [System.Net.ServicePointManager]::SecurityProtocol = ^
-                        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; ^
-                        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-                    )
-
-                    :: Install Firefox silently
-                    choco install firefox -y --no-progress
+                // Install Chocolatey if missing
+                powershell '''
+                    if (-not (Test-Path "$env:ProgramData\\chocolatey\\bin\\choco.exe")) {
+                        Set-ExecutionPolicy Bypass -Scope Process -Force
+                        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+                        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+                    }
                 '''
+                // Install Firefox silently
+                bat 'choco install firefox -y --no-progress'
             }
         }
 
