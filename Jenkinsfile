@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'selenium/standalone-firefox:4.22.0'
-            args '-u root'  // to allow installs if needed
+            args '-u root -v /c/Users/roush/.jenkins/workspace/MMT:/workspace -w /workspace'
         }
     }
 
